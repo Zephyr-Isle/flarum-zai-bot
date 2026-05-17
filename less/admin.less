@@ -1,0 +1,106 @@
+.ZaiBotSettingsPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ZaiBotSettingsPanel-header p {
+  color: var(--muted-color);
+  margin: 8px 0 0;
+}
+
+.ZaiBotSettingsPanel-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ZaiBotSettingsPanel-section {
+  background: var(--control-bg);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.ZaiBotSettingsPanel-metrics {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.ZaiBotSettingsPanel-metric {
+  background: var(--control-bg);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.ZaiBotSettingsPanel-metricLabel {
+  color: var(--muted-color);
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.ZaiBotSettingsPanel-metricValue {
+  font-size: 26px;
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+.ZaiBotSettingsPanel-note {
+  background: var(--body-bg);
+  border-left: 3px solid var(--primary-color);
+  color: var(--muted-color);
+  margin-bottom: 16px;
+  padding: 12px;
+}
+
+.ZaiBotSettingsPanel-subsection {
+  border-top: 1px solid fade(#000, 8%);
+  margin-top: 20px;
+  padding-top: 20px;
+}
+
+.ZaiBotSettingsPanel-subsectionHeader,
+.ZaiBotSettingsPanel-listItem,
+.ZaiBotSettingsPanel-actions {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.ZaiBotSettingsPanel-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.ZaiBotSettingsPanel-gridSpan2 {
+  grid-column: span 2;
+}
+
+.ZaiBotSettingsPanel-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.ZaiBotSettingsPanel-listItem {
+  background: var(--body-bg);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.ZaiBotSettingsPanel-note pre {
+  margin: 0;
+  overflow: auto;
+  white-space: pre-wrap;
+}
+
+.ZaiBotSettingsPanel-status--success {
+  color: #1f8b4c;
+}
+
+.ZaiBotSettingsPanel-status--error {
+  color: #c0392b;
+}

@@ -1,0 +1,10 @@
+{
+  "extends": "@flarum/core/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "flarum/*": ["node_modules/@flarum/core/js/dist-typings/*"]
+    }
+  },
+  "include": ["src/**/*"]
+}

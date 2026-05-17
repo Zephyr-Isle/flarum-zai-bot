@@ -1,0 +1,268 @@
+zai-bot:
+  admin:
+    page:
+      title: Zai Bot
+      description: 配置多角色 AI 助手的提供商、数据存储、记忆、工具联动与安全策略。
+    database:
+      test_button: 测试连接
+      testing: 正在测试连接...
+      connection_success: 数据库连接成功。
+      connection_failed: 数据库连接失败。
+    tools:
+      dependency_missing: "需要启用扩展：{extension}。"
+      upload_note: "FoF Upload 文件解析入口已预留，后续可通过可选工具管线接入文件识别与内容抽取。"
+    agents:
+      scaffold_note: "AI 角色 CRUD、用户绑定和测试对话沙盒的数据结构已经就绪，下一步应通过专用后台 API 资源完成。"
+    debug:
+      export_note: 配置导出、缓存清理和统计仪表板建议通过专用后台动作与 API 端点实现。
+    tabs:
+      api:
+        title: API 设置
+        description: 配置多服务商、默认模型、鉴权信息与请求行为。
+        fields:
+          api_base_url:
+            label: API Base URL
+            help: OpenAI 兼容 Chat / Embeddings 接口基础地址。
+            placeholder: https://api.openai.com/v1
+          api_key:
+            label: API Key
+            help: 应在后端加密后再持久化保存。
+            placeholder: sk-...
+          default_model:
+            label: 默认对话模型
+            help: 当 AI 角色未覆盖自己的语言模型时使用。
+            placeholder: gpt-4o-mini
+          default_temperature:
+            label: 默认温度
+            help: 全局默认温度，范围 0 到 1。
+            placeholder: 0.7
+          max_output_tokens:
+            label: 最大输出 Tokens
+            help: 生成回复的最大长度限制。
+            placeholder: 2000
+          request_timeout:
+            label: 请求超时
+            help: Chat 和 Embeddings 请求超时秒数。
+            placeholder: 30
+          provider_catalog:
+            label: 服务商目录
+            help: 使用 JSON 数组配置多个服务商及其支持的模型。
+            placeholder: '[{"name":"OpenAI","driver":"openai-compatible"}]'
+          auto_discover_models:
+            label: 自动发现模型
+            help: 自动探测服务商可用的语言、识图和向量模型。
+      database:
+        title: 数据库设置
+        description: 使用 PostgreSQL + pgvector，或复用主论坛数据库存放 AI 数据。
+        fields:
+          database_enabled:
+            label: 使用独立 PostgreSQL 数据库
+            help: 关闭时复用主 Flarum 数据库连接。
+          database_host:
+            label: 主机
+            help: AI 数据存储使用的 PostgreSQL 主机。
+            placeholder: 127.0.0.1
+          database_port:
+            label: 端口
+            help: PostgreSQL 端口。
+            placeholder: 5432
+          database_name:
+            label: 数据库名
+            help: 启用了 pgvector 的 AI 数据库名称。
+            placeholder: flarum_ai
+          database_username:
+            label: 用户名
+            help: PostgreSQL 登录用户名。
+            placeholder: postgres
+          database_password:
+            label: 密码
+            help: 仅用于独立数据库连接并应安全存储。
+            placeholder: secret
+      agents:
+        title: AI 角色管理
+        description: 管理虚拟用户、人设、模型覆盖与沙盒工作流。
+        fields:
+          allowed_sections:
+            label: 允许的版块与标签
+            help: 按行填写 ID 或 slug，用于主动发言与角色作用域控制。
+            placeholder: lounge\nweekly-chat
+      tools:
+        title: 工具联动
+        description: 配置工具开关、依赖检测、审核保护和内容预过滤。
+        fields:
+          tool_like_enabled:
+            label: 启用点赞工具
+            help: 在依赖满足时允许 AI 点赞帖子。
+          tool_like_cooldown_seconds:
+            label: 点赞冷却时间
+            help: AI 再次点赞同一用户内容前至少等待的秒数。
+            placeholder: 3600
+          tool_report_enabled:
+            label: 启用举报工具
+            help: 仍需遵守多重确认阈值或高置信度策略。
+          tool_report_confirmation_threshold:
+            label: 举报确认阈值
+            help: 真正提交举报前需要的确认次数。
+            placeholder: 2
+          tool_follow_enabled:
+            label: 启用回应/跟进工具
+            help: 预留给 reactions 或未来的跟进行为。
+          tool_sensitive_words:
+            label: 敏感词预过滤
+            help: 每行一个关键词，AI 内容发布前先做预过滤。
+            placeholder: secret-token\ncredit-card
+      active_posting:
+        title: 主动发言
+        description: 调整主动发帖、沉寂扫描和频率限制。
+        fields:
+          active_posting_enabled:
+            label: 启用主动发言
+            help: 允许 AI 在批准区域主动发主题或回帖。
+          active_posting_quiet_hours:
+            label: 沉寂阈值小时数
+            help: 超过该时长无人互动后可触发暖场判断。
+            placeholder: 24
+          active_posting_hourly_limit:
+            label: 每小时主动上限
+            help: 每个 AI 每小时最多主动操作次数。
+            placeholder: 1
+          active_posting_daily_limit:
+            label: 每日主动上限
+            help: 每个 AI 每日最多主动操作次数。
+            placeholder: 5
+          active_posting_probability:
+            label: 随机触发概率
+            help: 定时主动决策时使用的百分比概率。
+            placeholder: 5
+          active_posting_max_length:
+            label: 主动内容最大长度
+            help: 主动发帖或回复的字符数限制。
+            placeholder: 800
+      memory:
+        title: 好感度与记忆
+        description: 配置好感度、人格图、向量记忆和衰减策略。
+        fields:
+          affection_enabled:
+            label: 启用好感度系统
+            help: 为每个 AI 维护独立的用户好感度分值。
+          affection_max_positive_delta:
+            label: 单次最大加分
+            help: 友好互动时单次可增加的上限。
+            placeholder: 0.05
+          affection_max_negative_delta:
+            label: 单次最大减分
+            help: 敌对互动时单次可减少的上限。
+            placeholder: 0.10
+          affection_decay_enabled:
+            label: 启用好感度衰减
+            help: 长时间无互动时逐步衰减。
+          affection_decay_rate:
+            label: 好感度衰减率
+            help: 每日衰减值。
+            placeholder: 0.001
+          affection_floor:
+            label: 好感度最低阈值
+            help: 衰减不会低于该值。
+            placeholder: 0.3
+          persona_map_enabled:
+            label: 启用人格图
+            help: 从历史发言中构建内部人格标签。
+          long_term_memory_enabled:
+            label: 启用长期记忆
+            help: 将摘要和向量嵌入持久化到 PostgreSQL。
+          embedding_model:
+            label: 向量模型
+            help: 默认用于摘要向量化的模型。
+            placeholder: text-embedding-3-small
+          memory_retrieval_limit:
+            label: 检索记忆条数
+            help: 每次注入到上下文中的记忆数量。
+            placeholder: 5
+          memory_initial_strength:
+            label: 初始记忆强度
+            help: 新摘要写入时的初始强度。
+            placeholder: 1.0
+          memory_decay_rate:
+            label: 记忆衰减率
+            help: 每日应用到记忆强度的衰减值。
+            placeholder: 0.01
+          memory_cleanup_threshold:
+            label: 清理阈值
+            help: 低于该值时删除或归档记忆。
+            placeholder: 0.1
+          short_term_memory_turns:
+            label: 短期上下文轮数
+            help: Prompt 中保留的最近对话轮数。
+            placeholder: 10
+      ai_loops:
+        title: AI @ AI 与防循环
+        description: 控制 AI 互相 @、连续回复深度与讨论限流窗口。
+        fields:
+          allow_ai_mentions:
+            label: 允许 AI @ AI
+            help: 启用讨论中的跨角色协作。
+          ai_reply_depth_limit:
+            label: 连续 AI 回复深度
+            help: 连续 AI 回复达到该值后终止循环。
+            placeholder: 3
+          ai_reply_window_minutes:
+            label: 回复窗口分钟数
+            help: 用于讨论内 AI 总回复限流的时间窗口。
+            placeholder: 60
+          ai_reply_window_max:
+            label: 窗口内最大回复数
+            help: 在窗口期内允许的 AI 回复上限。
+            placeholder: 10
+          log_ai_mentions:
+            label: 记录 AI @ AI 日志
+            help: 将 AI 之间的 @ 行为写入动作日志。
+      cooperation:
+        title: 合作模式
+        description: 配置主从 AI 的协作延迟和超时策略。
+        fields:
+          cooperation_enabled:
+            label: 启用合作模式
+            help: 允许主 AI 与从 AI 团队协作回复。
+          assistant_delay_min:
+            label: 从 AI 最小延迟
+            help: 从 AI 回复前的最小等待秒数。
+            placeholder: 5
+          assistant_delay_max:
+            label: 从 AI 最大延迟
+            help: 从 AI 回复前的最大等待秒数。
+            placeholder: 30
+          master_timeout_seconds:
+            label: 主 AI 超时时间
+            help: 超过该秒数后从 AI 放弃等待本轮协作。
+            placeholder: 60
+      admin_mode:
+        title: 管理识别
+        description: 调整 AI 面对管理员、版主和内部参数时的行为。
+        fields:
+          admin_mode_enabled:
+            label: 启用管理识别
+            help: 在生成回复时识别管理员与版主身份。
+          admin_can_view_internal_params:
+            label: 允许查看内部参数
+            help: 仅向管理员暴露模型和 token 等内部信息。
+          admin_can_view_reasoning:
+            label: 允许显示简短推理
+            help: 仅向可信管理员显示简要推理摘要。
+      debug:
+        title: 高级与调试
+        description: 启用请求日志、详细错误和开发者调试开关。
+        fields:
+          log_llm_requests:
+            label: 记录 LLM 请求
+            help: 保存请求元数据用于诊断和成本统计。
+          verbose_errors:
+            label: 详细错误日志
+            help: 在日志中记录更多后端失败细节。
+          developer_mode:
+            label: 开发者模式
+            help: 为 AI 回复添加调试信息并启用额外诊断。
+  forum:
+    status:
+      thinking: Zai Bot 正在思考...
+      liked: Zai Bot 已为这条内容点赞。
+      tool_unavailable: 当前请求的 AI 工具不可用。

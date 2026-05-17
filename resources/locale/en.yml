@@ -1,0 +1,268 @@
+zai-bot:
+  admin:
+    page:
+      title: Zai Bot
+      description: Multi-role AI assistant settings, data storage, memory, tools, and safety controls.
+    database:
+      test_button: Test connection
+      testing: Testing connection...
+      connection_success: Database connection succeeded.
+      connection_failed: Database connection failed.
+    tools:
+      dependency_missing: "Requires the {extension} extension to be enabled."
+      upload_note: "FoF Upload file ingestion is reserved as a follow-up integration point. Uploaded file parsing should be implemented through the optional tool pipeline."
+    agents:
+      scaffold_note: "AI agent CRUD, user binding, and sandbox chat are modeled in the backend schema and should be completed through dedicated admin API resources next."
+    debug:
+      export_note: Export JSON, cache purge, and dashboard widgets should be implemented through dedicated admin actions and API endpoints.
+    tabs:
+      api:
+        title: API
+        description: Configure providers, default models, authentication, and request behavior.
+        fields:
+          api_base_url:
+            label: API base URL
+            help: OpenAI-compatible chat and embeddings endpoint base URL.
+            placeholder: https://api.openai.com/v1
+          api_key:
+            label: API key
+            help: Store encrypted in the backend before persistence.
+            placeholder: sk-...
+          default_model:
+            label: Default chat model
+            help: Used when an AI agent does not override its own language model.
+            placeholder: gpt-4o-mini
+          default_temperature:
+            label: Default temperature
+            help: Global fallback temperature between 0 and 1.
+            placeholder: 0.7
+          max_output_tokens:
+            label: Max output tokens
+            help: Upper bound for generated replies.
+            placeholder: 2000
+          request_timeout:
+            label: Request timeout
+            help: Timeout for chat and embeddings requests, in seconds.
+            placeholder: 30
+          provider_catalog:
+            label: Provider catalog
+            help: JSON array of multiple providers and supported models.
+            placeholder: '[{"name":"OpenAI","driver":"openai-compatible"}]'
+          auto_discover_models:
+            label: Auto discover models
+            help: Probe provider endpoints and refresh available chat, vision, and embedding models.
+      database:
+        title: Database
+        description: Use PostgreSQL with pgvector, or keep AI data in the primary forum database.
+        fields:
+          database_enabled:
+            label: Use dedicated PostgreSQL database
+            help: Disable to reuse the primary Flarum database connection.
+          database_host:
+            label: Host
+            help: PostgreSQL host for AI data storage.
+            placeholder: 127.0.0.1
+          database_port:
+            label: Port
+            help: PostgreSQL port.
+            placeholder: 5432
+          database_name:
+            label: Database name
+            help: Database containing pgvector-enabled AI tables.
+            placeholder: flarum_ai
+          database_username:
+            label: Username
+            help: PostgreSQL user name.
+            placeholder: postgres
+          database_password:
+            label: Password
+            help: Stored securely and only used for the dedicated connection.
+            placeholder: secret
+      agents:
+        title: AI Agents
+        description: Manage virtual users, personas, model overrides, and sandbox workflows.
+        fields:
+          allowed_sections:
+            label: Allowed sections and tags
+            help: Newline-separated IDs or slugs used by active posting and agent scoping.
+            placeholder: lounge\nweekly-chat
+      tools:
+        title: Tools
+        description: Configure tool linkage, dependency awareness, moderation safeguards, and prefilters.
+        fields:
+          tool_like_enabled:
+            label: Enable likes tool
+            help: Allow AI agents to like posts when the dependency is available.
+          tool_like_cooldown_seconds:
+            label: Like cooldown
+            help: Minimum seconds before liking content from the same user again.
+            placeholder: 3600
+          tool_report_enabled:
+            label: Enable report tool
+            help: Reports should still honor the confirmation threshold or confidence policy.
+          tool_report_confirmation_threshold:
+            label: Report confirmation threshold
+            help: Number of approvals required before a report is submitted.
+            placeholder: 2
+          tool_follow_enabled:
+            label: Enable reaction or follow-up tool
+            help: Reserve this switch for reactions or future follow-up actions.
+          tool_sensitive_words:
+            label: Sensitive words prefilter
+            help: One keyword per line. Generated content should be filtered before posting.
+            placeholder: secret-token\ncredit-card
+      active_posting:
+        title: Active Posting
+        description: Tune proactive discussion starts, quiet-period scanning, and rate limits.
+        fields:
+          active_posting_enabled:
+            label: Enable proactive posting
+            help: Allow AI to create new topics or proactive replies in approved areas.
+          active_posting_quiet_hours:
+            label: Quiet threshold hours
+            help: Trigger proactive warm-up after this many silent hours.
+            placeholder: 24
+          active_posting_hourly_limit:
+            label: Hourly proactive limit
+            help: Maximum proactive actions per AI each hour.
+            placeholder: 1
+          active_posting_daily_limit:
+            label: Daily proactive limit
+            help: Maximum proactive actions per AI each day.
+            placeholder: 5
+          active_posting_probability:
+            label: Random trigger probability
+            help: Percentage chance used by scheduled proactive decisions.
+            placeholder: 5
+          active_posting_max_length:
+            label: Max proactive length
+            help: Character limit for proactive posts or replies.
+            placeholder: 800
+      memory:
+        title: Affection & Memory
+        description: Configure affection scores, persona maps, vector memory, and decay behavior.
+        fields:
+          affection_enabled:
+            label: Enable affection system
+            help: Toggle per-user affection scoring for each AI agent.
+          affection_max_positive_delta:
+            label: Max affection increase
+            help: Upper bound per interaction for friendly signals.
+            placeholder: 0.05
+          affection_max_negative_delta:
+            label: Max affection decrease
+            help: Upper bound per interaction for hostile behavior.
+            placeholder: 0.10
+          affection_decay_enabled:
+            label: Enable affection decay
+            help: Decay affection over time when users stop interacting.
+          affection_decay_rate:
+            label: Affection decay rate
+            help: Daily decay value.
+            placeholder: 0.001
+          affection_floor:
+            label: Affection floor
+            help: Lowest value permitted by decay.
+            placeholder: 0.3
+          persona_map_enabled:
+            label: Enable persona map
+            help: Build internal personality tags from historical posting behavior.
+          long_term_memory_enabled:
+            label: Enable long-term memory
+            help: Persist summaries with vector embeddings in PostgreSQL.
+          embedding_model:
+            label: Embedding model
+            help: Default vector model for summary embedding generation.
+            placeholder: text-embedding-3-small
+          memory_retrieval_limit:
+            label: Memory retrieval count
+            help: Number of memories injected into generation context.
+            placeholder: 5
+          memory_initial_strength:
+            label: Initial memory strength
+            help: Starting strength value for new summaries.
+            placeholder: 1.0
+          memory_decay_rate:
+            label: Memory decay rate
+            help: Daily decay applied to memory strength.
+            placeholder: 0.01
+          memory_cleanup_threshold:
+            label: Cleanup threshold
+            help: Delete or archive memories when strength drops below this value.
+            placeholder: 0.1
+          short_term_memory_turns:
+            label: Short-term turns retained
+            help: Number of recent turns kept in prompt context.
+            placeholder: 10
+      ai_loops:
+        title: AI @ AI
+        description: Control AI-to-AI mentions, anti-loop depth, and discussion window limits.
+        fields:
+          allow_ai_mentions:
+            label: Allow AI to mention other AI
+            help: Enable cross-agent collaboration inside discussions.
+          ai_reply_depth_limit:
+            label: Max consecutive AI depth
+            help: Stop the chain once consecutive AI replies reach this number.
+            placeholder: 3
+          ai_reply_window_minutes:
+            label: Reply window minutes
+            help: Time window for total AI reply rate limiting in a discussion.
+            placeholder: 60
+          ai_reply_window_max:
+            label: Max replies per window
+            help: Upper bound of AI replies within the configured window.
+            placeholder: 10
+          log_ai_mentions:
+            label: Log AI mentions
+            help: Record all AI-to-AI mentions in the action log.
+      cooperation:
+        title: Cooperation
+        description: Configure master and assistant timing for collaborative replies.
+        fields:
+          cooperation_enabled:
+            label: Enable cooperation mode
+            help: Allow master and assistant AI agents to work as a team.
+          assistant_delay_min:
+            label: Assistant minimum delay
+            help: Minimum seconds before an assistant AI responds.
+            placeholder: 5
+          assistant_delay_max:
+            label: Assistant maximum delay
+            help: Maximum seconds before an assistant AI responds.
+            placeholder: 30
+          master_timeout_seconds:
+            label: Master timeout
+            help: Time before assistants abandon a pending collaborative turn.
+            placeholder: 60
+      admin_mode:
+        title: Admin Recognition
+        description: Tune how AI handles administrators, moderators, and sensitive internals.
+        fields:
+          admin_mode_enabled:
+            label: Enable admin recognition
+            help: Detect admin and moderator roles when shaping replies.
+          admin_can_view_internal_params:
+            label: Allow internal parameter disclosure
+            help: Permit model and token details to be shown to admins only.
+          admin_can_view_reasoning:
+            label: Allow brief reasoning for admins
+            help: Permit a short reasoning summary for trusted operators.
+      debug:
+        title: Advanced & Debug
+        description: Enable request logging, verbose failures, and developer-only switches.
+        fields:
+          log_llm_requests:
+            label: Log LLM requests
+            help: Store request metadata for diagnostics and cost tracking.
+          verbose_errors:
+            label: Verbose errors
+            help: Include detailed backend failures in logs.
+          developer_mode:
+            label: Developer mode
+            help: Mark AI replies with debug hints and enable extra diagnostics.
+  forum:
+    status:
+      thinking: Zai Bot is thinking...
+      liked: Zai Bot liked this content.
+      tool_unavailable: The requested AI tool is not available.

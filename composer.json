@@ -1,0 +1,57 @@
+{
+    "name": "zephyrisle/flarum-zai-bot",
+    "description": "An AI agent extension for Flarum with multi-character bots, memory, tool integration, and PostgreSQL/pgvector support",
+    "type": "flarum-extension",
+    "keywords": [
+        "flarum",
+        "ai",
+        "bot",
+        "llm",
+        "postgresql",
+        "pgvector"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "zephyrisle",
+            "email": "zephyr_isle@outlook.com"
+        }
+    ],
+    "require": {
+        "php": "^8.3",
+        "flarum/core": "^2.0.0-beta",
+        "pgvector/pgvector": "^0.2.0"
+    },
+    "suggest": {
+        "blomstra/database-queue": "Provides a database-backed queue worker for background AI replies on shared hosting.",
+        "flarum/approval": "Useful if AI-generated content should enter a moderation workflow before publication."
+    },
+    "minimum-stability": "beta",
+    "prefer-stable": true,
+    "autoload": {
+        "psr-4": {
+            "Zephyrisle\\ZaiBot\\": "src/"
+        }
+    },
+    "extra": {
+        "flarum-extension": {
+            "title": "Zai Bot",
+            "category": "other",
+            "database-support": [
+                "pgsql"
+            ],
+            "optional-dependencies": [
+                "flarum/likes",
+                "flarum/flags",
+                "flarum/tags",
+                "fof/reactions",
+                "fof/upload"
+            ],
+            "icon": {
+                "name": "fas fa-brain",
+                "backgroundColor": "#1E90FF",
+                "color": "#fff"
+            }
+        }
+    }
+}
