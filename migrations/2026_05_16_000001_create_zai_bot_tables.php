@@ -9,7 +9,7 @@ return [
         $driver = $db->getDriverName();
 
         $schema->create('ai_providers', function (Blueprint $table) use ($driver) {
-            $table->bigIncrements('id');
+            $table->increments('id');
             $table->string('name');
             $table->string('driver')->default('openai-compatible');
             $table->string('base_url');
@@ -24,9 +24,11 @@ return [
         });
 
         $schema->create('ai_agents', function (Blueprint $table) use ($driver) {
-            $table->bigIncrements('id');
-            $table->foreignId('flarum_user_id')->unique()->constrained('users')->cascadeOnDelete();
-            $table->foreignId('provider_id')->nullable()->constrained('ai_providers')->nullOnDelete();
+            $table->increments('id');
+            $table->integer('flarum_user_id')->unsigned()->unique();
+            $table->integer('provider_id')->unsigned()->nullable();
+            $table->foreign('flarum_user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('provider_id')->references('id')->on('ai_providers')->onDelete('set null');
             $table->string('name');
             $table->string('avatar_url')->nullable();
             $table->text('personality');
@@ -51,9 +53,11 @@ return [
         });
 
         $schema->create('user_ai_memories', function (Blueprint $table) use ($driver) {
-            $table->bigIncrements('id');
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('ai_agent_id')->nullable()->constrained('ai_agents')->cascadeOnDelete();
+            $table->increments('id');
+            $table->integer('user_id')->unsigned();
+            $table->integer('ai_agent_id')->unsigned()->nullable();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('ai_agent_id')->references('id')->on('ai_agents')->onDelete('cascade');
             $table->float('affection_score')->default(0.5);
             if ($driver === 'pgsql') {
                 $table->jsonb('personality_tags')->nullable();
@@ -71,10 +75,13 @@ return [
         });
 
         $schema->create('conversation_memories', function (Blueprint $table) use ($driver) {
-            $table->bigIncrements('id');
-            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->foreignId('discussion_id')->nullable()->constrained('discussions')->nullOnDelete();
-            $table->foreignId('ai_agent_id')->nullable()->constrained('ai_agents')->nullOnDelete();
+            $table->increments('id');
+            $table->integer('user_id')->unsigned()->nullable();
+            $table->integer('discussion_id')->unsigned()->nullable();
+            $table->integer('ai_agent_id')->unsigned()->nullable();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
+            $table->foreign('discussion_id')->references('id')->on('discussions')->onDelete('set null');
+            $table->foreign('ai_agent_id')->references('id')->on('ai_agents')->onDelete('set null');
             $table->text('summary');
             $table->float('strength')->default(1.0);
             if ($driver === 'pgsql') {
@@ -96,9 +103,11 @@ return [
         }
 
         $schema->create('ai_action_logs', function (Blueprint $table) use ($driver) {
-            $table->bigIncrements('id');
-            $table->foreignId('ai_agent_id')->nullable()->constrained('ai_agents')->nullOnDelete();
-            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->increments('id');
+            $table->integer('ai_agent_id')->unsigned()->nullable();
+            $table->integer('user_id')->unsigned()->nullable();
+            $table->foreign('ai_agent_id')->references('id')->on('ai_agents')->onDelete('set null');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
             $table->string('action_type', 50);
             $table->string('target_type', 50);
             $table->unsignedBigInteger('target_id')->nullable();
