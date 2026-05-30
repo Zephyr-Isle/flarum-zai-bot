@@ -7,12 +7,24 @@ use Flarum\Discussion\Discussion;
 use Flarum\User\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Pgvector\Laravel\Vector as VectorCast;
-use Pgvector\Vector;
+use Illuminate\Support\Facades\DB;
+use Zephyrisle\ZaiBot\Support\DatabaseConfig;
 
 class ConversationMemory extends AbstractModel
 {
     protected $table = 'conversation_memories';
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        
+        /** @var DatabaseConfig $databaseConfig */
+        $databaseConfig = resolve(DatabaseConfig::class);
+        
+        if ($databaseConfig->useSeparateDatabase()) {
+            $this->setConnection($databaseConfig->getConnectionName());
+        }
+    }
 
     protected $fillable = [
         'user_id',
@@ -25,17 +37,28 @@ class ConversationMemory extends AbstractModel
     ];
 
     protected $casts = [
-        'embedding' => VectorCast::class,
+        'embedding' => 'array',
         'strength' => 'float',
         'last_accessed_at' => 'datetime',
     ];
 
     public function scopeNearestTo(Builder $query, array $embedding, int $limit = 5): Builder
     {
+        $driver = $this->getConnection()->getDriverName();
+
+        if ($driver === 'pgsql' && class_exists('Pgvector\Laravel\Vector') && class_exists('Pgvector\Vector')) {
+            return $query
+                ->select('*')
+                ->selectRaw('embedding <=> ? as neighbor_distance', [new \Pgvector\Vector($embedding)])
+                ->orderByRaw('embedding <=> ?', [new \Pgvector\Vector($embedding)])
+                ->limit($limit);
+        }
+
+        // For MySQL and other databases, just return recent memories without vector search
         return $query
             ->select('*')
-            ->selectRaw('embedding <=> ? as neighbor_distance', [new Vector($embedding)])
-            ->orderByRaw('embedding <=> ?', [new Vector($embedding)])
+            ->selectRaw('0 as neighbor_distance')
+            ->latest('id')
             ->limit($limit);
     }
 

@@ -5,11 +5,23 @@ namespace Zephyrisle\ZaiBot\Model;
 use Flarum\Database\AbstractModel;
 use Flarum\User\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Zephyrisle\ZaiBot\Support\DatabaseConfig;
 
 class AiAgent extends AbstractModel
 {
     protected $table = 'ai_agents';
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        
+        /** @var DatabaseConfig $databaseConfig */
+        $databaseConfig = resolve(DatabaseConfig::class);
+        
+        if ($databaseConfig->useSeparateDatabase()) {
+            $this->setConnection($databaseConfig->getConnectionName());
+        }
+    }
 
     protected $fillable = [
         'flarum_user_id',
@@ -42,12 +54,12 @@ class AiAgent extends AbstractModel
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'flarum_user_id');
+        return $this->belongsTo(User::class);
     }
 
     public function provider(): BelongsTo
     {
-        return $this->belongsTo(AiProvider::class, 'provider_id');
+        return $this->belongsTo(AiProvider::class);
     }
 
     public function actionLogs(): HasMany

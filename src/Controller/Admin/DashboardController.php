@@ -5,6 +5,7 @@ namespace Zephyrisle\ZaiBot\Controller\Admin;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Zephyrisle\ZaiBot\Service\ExtensionIntegrationService;
 use Zephyrisle\ZaiBot\Service\SettingAccessor;
 use Zephyrisle\ZaiBot\Service\StatsService;
 
@@ -12,7 +13,8 @@ class DashboardController extends AbstractAdminController implements RequestHand
 {
     public function __construct(
         private StatsService $stats,
-        private SettingAccessor $settings
+        private SettingAccessor $settings,
+        private ExtensionIntegrationService $integrations
     ) {
     }
 
@@ -23,6 +25,10 @@ class DashboardController extends AbstractAdminController implements RequestHand
         return $this->ok([
             'stats' => $this->stats->summary(),
             'settings' => $this->settings->allDefaultsMerged(),
+            'integrations' => [
+                'summary' => $this->integrations->summary(),
+                'catalog' => $this->integrations->catalog(),
+            ],
         ]);
     }
 }

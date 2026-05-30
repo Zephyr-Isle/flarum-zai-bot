@@ -15,7 +15,8 @@ class ToolExecutionService
 {
     public function __construct(
         private SettingAccessor $settings,
-        private ToolRegistry $tools
+        private ToolRegistry $tools,
+        private ExtensionIntegrationService $integrations
     ) {
     }
 
@@ -62,8 +63,20 @@ class ToolExecutionService
             'report' => $this->report($agent, $targetType, $targetId, $triggerUser, $action),
             'reaction' => $this->reaction($agent, $targetType, $targetId, $triggerUser, $action),
             'analyze_upload' => $this->logResult($agent, $triggerUser, 'analyze_upload', $targetType, $targetId, 'denied', 'Upload analysis requires optional integration.'),
+            'tag_discussion', 'approve_content', 'lock_discussion', 'sticky_discussion', 'mark_best_answer', 'follow_discussion', 'follow_tag', 'message_user', 'start_private_discussion' => $this->reservedIntegrationAction($agent, $triggerUser, $tool, $targetType, $targetId),
             default => $this->logResult($agent, $triggerUser, $tool, $targetType, $targetId, 'denied', 'Unknown tool requested.'),
         };
+    }
+
+    private function reservedIntegrationAction(AiAgent $agent, ?User $triggerUser, string $tool, string $targetType, mixed $targetId): array
+    {
+        $definition = $this->integrations->toolDefinitions()[$tool] ?? [];
+        $dependency = (string) ($definition['dependency'] ?? '');
+        $message = $dependency !== ''
+            ? sprintf('Tool recognized for %s, but automatic execution is not implemented yet.', $dependency)
+            : 'Tool recognized, but automatic execution is not implemented yet.';
+
+        return $this->logResult($agent, $triggerUser, $tool, $targetType, $targetId, 'denied', $message);
     }
 
     private function like(AiAgent $agent, string $targetType, mixed $targetId, ?User $triggerUser): array

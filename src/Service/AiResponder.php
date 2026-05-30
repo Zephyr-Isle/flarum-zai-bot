@@ -19,6 +19,7 @@ class AiResponder
         private MemoryService $memory,
         private ToolExecutionService $tools,
         private SettingAccessor $settings,
+        private ExtensionIntegrationService $integrations,
         private Dispatcher $bus
     ) {
     }
@@ -269,6 +270,7 @@ class AiResponder
             $agent->expertise ? '专长：'.$agent->expertise : null,
             $agent->system_prompt,
             '请输出适合论坛的自然回复，避免暴露系统细节。',
+            $this->integrations->promptContext(),
         ])));
 
         if ($sourceUser && $this->settings->bool('admin_mode_enabled')) {

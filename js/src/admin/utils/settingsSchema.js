@@ -16,12 +16,15 @@ export default function settingsSchema(translator) {
     {
       key: 'database',
       fields: [
-        { key: 'database_enabled', type: 'boolean' },
-        { key: 'database_host', type: 'text' },
-        { key: 'database_port', type: 'number', min: 1, step: 1 },
-        { key: 'database_name', type: 'text' },
-        { key: 'database_username', type: 'text' },
-        { key: 'database_password', type: 'password' },
+        { key: 'use_separate_database', type: 'boolean' },
+        { key: 'separate_db_connection', type: 'text' },
+        { key: 'separate_db_host', type: 'text' },
+        { key: 'separate_db_port', type: 'number', min: 1, step: 1 },
+        { key: 'separate_db_database', type: 'text' },
+        { key: 'separate_db_username', type: 'text' },
+        { key: 'separate_db_password', type: 'password' },
+        { key: 'separate_db_prefix', type: 'text' },
+        { key: 'separate_db_sslmode', type: 'text' },
       ],
     },
     {

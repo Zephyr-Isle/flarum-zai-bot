@@ -428,12 +428,58 @@ export default class ZaiBotSettingsPanel extends Component {
           ['Memories', stats.memoryCount],
           ['Actions', stats.actionCount],
           ['Failed Actions', stats.failedActionCount],
+          ['Enabled Integrations', stats.enabledIntegrationCount],
+          ['Tool-ready Integrations', stats.toolReadyIntegrationCount],
         ].map(([label, value]) => (
           <div key={label} className="ZaiBotSettingsPanel-metric">
             <div className="ZaiBotSettingsPanel-metricLabel">{label}</div>
             <div className="ZaiBotSettingsPanel-metricValue">{value}</div>
           </div>
         ))}
+      </div>
+    );
+  }
+
+  renderIntegrations() {
+    const integrations = this.dashboard?.integrations;
+
+    if (!integrations?.catalog?.length) {
+      return null;
+    }
+
+    const capabilities = Object.entries(integrations.summary?.capabilities || {});
+
+    return (
+      <div className="ZaiBotSettingsPanel-subsection">
+        <div className="ZaiBotSettingsPanel-subsectionHeader">
+          <h4>Extension Integrations</h4>
+        </div>
+
+        {capabilities.length > 0 && (
+          <div className="ZaiBotSettingsPanel-note">
+            <strong>Enabled capabilities:</strong>{' '}
+            {capabilities.map(([name, labels]) => `${name} (${labels.length})`).join(', ')}
+          </div>
+        )}
+
+        <div className="ZaiBotSettingsPanel-list">
+          {integrations.catalog.map((integration) => (
+            <div key={integration.id} className="ZaiBotSettingsPanel-listItem">
+              <div>
+                <strong>{integration.label}</strong>
+                <div className="helpText">
+                  {integration.id} · {integration.group} · {integration.mode}
+                </div>
+                <div className="helpText">{integration.capabilities.join(', ')}</div>
+              </div>
+              <div className="ZaiBotSettingsPanel-actions">
+                <span className={`Button Button--text ${integration.enabled ? 'ZaiBotSettingsPanel-status--success' : 'ZaiBotSettingsPanel-status--error'}`}>
+                  {integration.enabled ? 'Enabled' : 'Disabled'}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -687,6 +733,7 @@ export default class ZaiBotSettingsPanel extends Component {
         </div>
 
         {this.renderDashboard()}
+        {this.renderIntegrations()}
 
         {this.adminDataError && <div className="ZaiBotSettingsPanel-note ZaiBotSettingsPanel-status--error">{this.adminDataError}</div>}
 
