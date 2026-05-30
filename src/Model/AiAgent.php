@@ -5,6 +5,7 @@ namespace Zephyrisle\ZaiBot\Model;
 use Flarum\Database\AbstractModel;
 use Flarum\User\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Zephyrisle\ZaiBot\Support\DatabaseConfig;
 
 class AiAgent extends AbstractModel

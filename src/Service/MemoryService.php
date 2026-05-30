@@ -4,16 +4,17 @@ namespace Zephyrisle\ZaiBot\Service;
 
 use Carbon\CarbonInterface;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\DB;
 use Zephyrisle\ZaiBot\Model\AiAgent;
 use Zephyrisle\ZaiBot\Model\ConversationMemory;
 use Zephyrisle\ZaiBot\Model\UserAiMemory;
+use Zephyrisle\ZaiBot\Support\DatabaseConfig;
 
 class MemoryService
 {
     public function __construct(
         private SettingAccessor $settings,
-        private LlmService $llm
+        private LlmService $llm,
+        private DatabaseConfig $databaseConfig
     ) {
     }
 
@@ -137,7 +138,8 @@ class MemoryService
 
     public function cleanupSessionState(?CarbonInterface $before = null): int
     {
-        return DB::table('ai_session_state')
+        return $this->databaseConfig->getConnection()
+            ->table('ai_session_state')
             ->where('expires_at', '<', ($before ?: now())->toDateTimeString())
             ->delete();
     }
