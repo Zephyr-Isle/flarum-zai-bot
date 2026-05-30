@@ -119,11 +119,12 @@ export default class ZaiBotSettingsPanel extends Component {
 
     try {
       const payload = {
-        host: this.setting(page, 'database_host')(),
-        port: this.setting(page, 'database_port')(),
-        database: this.setting(page, 'database_name')(),
-        username: this.setting(page, 'database_username')(),
-        password: this.setting(page, 'database_password')(),
+        host: this.setting(page, 'separate_db_host')(),
+        port: this.setting(page, 'separate_db_port')(),
+        database: this.setting(page, 'separate_db_database')(),
+        username: this.setting(page, 'separate_db_username')(),
+        password: this.setting(page, 'separate_db_password')(),
+        sslmode: this.setting(page, 'separate_db_sslmode')(),
       };
 
       const response = await app.request({
@@ -636,9 +637,9 @@ export default class ZaiBotSettingsPanel extends Component {
           {this.agents.map((agent) => (
             <div key={agent.id} className="ZaiBotSettingsPanel-listItem">
               <div>
-                <strong>{agent.name}</strong>
+                <strong>{agent?.name || 'Unnamed Agent'}</strong>
                 <div className="helpText">
-                  {agent.user?.username || 'no-user'} · {agent.replyMode} · {agent.provider?.name || 'default-provider'}
+                  {agent?.user?.username || 'no-user'} · {agent?.replyMode || 'mention'} · {(agent?.provider?.name) || 'default-provider'}
                 </div>
               </div>
               <div className="ZaiBotSettingsPanel-actions">
