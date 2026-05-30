@@ -8,6 +8,21 @@ return [
         $db = $schema->getConnection();
         $driver = $db->getDriverName();
 
+        // Drop tables first in case they exist (to handle partial previous migrations)
+        if ($driver === 'pgsql') {
+            $db->statement('DROP TABLE IF EXISTS ai_session_state CASCADE');
+        } else {
+            $schema->dropIfExists('ai_session_state');
+        }
+        $schema->dropIfExists('ai_action_logs');
+        if ($driver === 'pgsql') {
+            $db->statement('DROP INDEX IF EXISTS conversation_memories_embedding_hnsw_idx');
+        }
+        $schema->dropIfExists('conversation_memories');
+        $schema->dropIfExists('user_ai_memories');
+        $schema->dropIfExists('ai_agents');
+        $schema->dropIfExists('ai_providers');
+
         $schema->create('ai_providers', function (Blueprint $table) use ($driver) {
             $table->increments('id');
             $table->string('name');
