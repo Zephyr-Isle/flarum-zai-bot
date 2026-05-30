@@ -1,9 +1,9 @@
 import app from 'flarum/admin/app';
-import Component from 'flarum/common/Component';
+import ExtensionPage from 'flarum/admin/components/ExtensionPage';
 import m from 'mithril';
 import settingsSchema from '../utils/settingsSchema';
 
-export default class ZaiBotSettingsPanel extends Component {
+export default class ZaiBotSettingsPanel extends ExtensionPage {
   oninit(vnode) {
     super.oninit(vnode);
 
@@ -35,8 +35,8 @@ export default class ZaiBotSettingsPanel extends Component {
     return app.translator.trans(`zai-bot.admin.${key}`, replacements, true);
   }
 
-  setting(page, key) {
-    return page.setting(`zai-bot.${key}`);
+  setting(key, fallback = '', label) {
+    return super.setting(`zai-bot.${key}`, fallback, label);
   }
 
   tabs() {
@@ -112,19 +112,19 @@ export default class ZaiBotSettingsPanel extends Component {
     }
   }
 
-  async testDatabase(page) {
+  async testDatabase() {
     this.testingDatabase = true;
     this.databaseTestResult = null;
     m.redraw();
 
     try {
       const payload = {
-        host: this.setting(page, 'separate_db_host')(),
-        port: this.setting(page, 'separate_db_port')(),
-        database: this.setting(page, 'separate_db_database')(),
-        username: this.setting(page, 'separate_db_username')(),
-        password: this.setting(page, 'separate_db_password')(),
-        sslmode: this.setting(page, 'separate_db_sslmode')(),
+        host: this.setting('separate_db_host')(),
+        port: this.setting('separate_db_port')(),
+        database: this.setting('separate_db_database')(),
+        username: this.setting('separate_db_username')(),
+        password: this.setting('separate_db_password')(),
+        sslmode: this.setting('separate_db_sslmode')(),
       };
 
       const response = await app.request({
@@ -351,14 +351,14 @@ export default class ZaiBotSettingsPanel extends Component {
     }
   }
 
-  renderBoolean(page, field) {
+  renderBoolean(field) {
     const key = `tabs.${this.activeTab}.fields.${field.key}`;
     const disabled = field.dependency && !this.extensionEnabled(field.dependency);
 
     return (
       <div className="Form-group">
         <label className="checkbox">
-          <input type="checkbox" bidi={this.setting(page, field.key)} disabled={disabled} />
+          <input type="checkbox" bidi={this.setting(field.key)} disabled={disabled} />
           {this.translator(`${key}.label`)}
         </label>
         <div className="helpText">
@@ -370,7 +370,7 @@ export default class ZaiBotSettingsPanel extends Component {
     );
   }
 
-  renderInput(page, field) {
+  renderInput(field) {
     const key = `tabs.${this.activeTab}.fields.${field.key}`;
 
     if (field.type === 'markup') {
@@ -378,7 +378,7 @@ export default class ZaiBotSettingsPanel extends Component {
     }
 
     if (field.type === 'boolean') {
-      return this.renderBoolean(page, field);
+      return this.renderBoolean(field);
     }
 
     if (field.type === 'textarea') {
@@ -388,7 +388,7 @@ export default class ZaiBotSettingsPanel extends Component {
           <div className="helpText">{this.translator(`${key}.help`)}</div>
           <textarea
             className="FormControl"
-            bidi={this.setting(page, field.key)}
+            bidi={this.setting(field.key)}
             rows={field.rows || 4}
             placeholder={this.translator(`${key}.placeholder`)}
           />
@@ -403,7 +403,7 @@ export default class ZaiBotSettingsPanel extends Component {
         <input
           className="FormControl"
           type={field.type || 'text'}
-          bidi={this.setting(page, field.key)}
+          bidi={this.setting(field.key)}
           placeholder={this.translator(`${key}.placeholder`)}
           min={field.min}
           max={field.max}
@@ -721,8 +721,7 @@ export default class ZaiBotSettingsPanel extends Component {
     );
   }
 
-  view(vnode) {
-    const page = vnode.attrs.page;
+  content() {
     const tabs = this.tabs();
     const currentTab = tabs.find((tab) => tab.key === this.activeTab) || tabs[0];
 
@@ -757,7 +756,7 @@ export default class ZaiBotSettingsPanel extends Component {
           <h3>{this.translator(`tabs.${currentTab.key}.title`)}</h3>
           <p className="helpText">{this.translator(`tabs.${currentTab.key}.description`)}</p>
           {currentTab.fields.map((field, index) => (
-            <div key={field.key || `markup-${index}`}>{this.renderInput(page, field)}</div>
+            <div key={field.key || `markup-${index}`}>{this.renderInput(field)}</div>
           ))}
 
           {currentTab.key === 'api' && this.renderProviderManager()}
@@ -771,7 +770,7 @@ export default class ZaiBotSettingsPanel extends Component {
                 type="button"
                 className="Button Button--secondary"
                 disabled={this.testingDatabase}
-                onclick={() => this.testDatabase(page)}
+                onclick={() => this.testDatabase()}
               >
                 {this.testingDatabase
                   ? this.translator('database.testing')
