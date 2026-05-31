@@ -9,7 +9,7 @@ use Flarum\Post\Post;
 use Illuminate\Contracts\Bus\Dispatcher;
 use Illuminate\Support\Arr;
 use Zephyrisle\ZaiBot\Model\AiAgent;
-use Zephyrisle\ZaiBot\Support\DatabaseConfig;
+use Illuminate\Support\Facades\DB;
 
 class AiResponder
 {
@@ -20,7 +20,6 @@ class AiResponder
         private ToolExecutionService $tools,
         private SettingAccessor $settings,
         private ExtensionIntegrationService $integrations,
-        private DatabaseConfig $databaseConfig,
         private Dispatcher $bus
     ) {
     }
@@ -216,7 +215,7 @@ class AiResponder
 
     private function reserveSession(string $sessionKey): bool
     {
-        $updated = $this->databaseConfig->getConnection()->table('ai_session_state')->updateOrInsert(
+        $updated = DB::table('ai_session_state')->updateOrInsert(
             ['session_key' => $sessionKey],
             [
                 'context' => json_encode([]),
@@ -230,8 +229,7 @@ class AiResponder
 
     private function releaseSession(string $sessionKey): void
     {
-        $this->databaseConfig->getConnection()
-            ->table('ai_session_state')
+        DB::table('ai_session_state')
             ->where('session_key', $sessionKey)
             ->delete();
     }

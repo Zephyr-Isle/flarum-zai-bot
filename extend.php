@@ -22,13 +22,14 @@ use Zephyrisle\ZaiBot\Console\UpdatePersonalityTagsCommand;
 use Zephyrisle\ZaiBot\Controller\Admin\DashboardController;
 use Zephyrisle\ZaiBot\Controller\Admin\DeleteAgentController;
 use Zephyrisle\ZaiBot\Controller\Admin\DeleteProviderController;
+use Zephyrisle\ZaiBot\Controller\Admin\DiscoverProviderModelsController;
 use Zephyrisle\ZaiBot\Controller\Admin\ListAgentsController;
 use Zephyrisle\ZaiBot\Controller\Admin\ListProvidersController;
 use Zephyrisle\ZaiBot\Controller\Admin\MaintenanceController;
 use Zephyrisle\ZaiBot\Controller\Admin\SaveAgentController;
 use Zephyrisle\ZaiBot\Controller\Admin\SaveProviderController;
 use Zephyrisle\ZaiBot\Controller\Admin\TestChatController;
-use Zephyrisle\ZaiBot\Controller\TestDatabaseConnectionController;
+use Zephyrisle\ZaiBot\Controller\Admin\TestProviderController;
 use Zephyrisle\ZaiBot\Listener\QueueAiResponseOnPost;
 use Zephyrisle\ZaiBot\Provider\ZaiBotServiceProvider;
 
@@ -42,9 +43,10 @@ return [
     new Extend\Locales(__DIR__.'/resources/locale'),
     new Extend\ServiceProvider(ZaiBotServiceProvider::class),
     (new Extend\Routes('api'))
-        ->post('/zai-bot/test-database', 'zai-bot.test-database', TestDatabaseConnectionController::class)
         ->get('/zai-bot/admin/dashboard', 'zai-bot.admin.dashboard', DashboardController::class)
         ->get('/zai-bot/admin/providers', 'zai-bot.admin.providers.index', ListProvidersController::class)
+        ->post('/zai-bot/admin/providers/test', 'zai-bot.admin.providers.test', TestProviderController::class)
+        ->post('/zai-bot/admin/providers/discover-models', 'zai-bot.admin.providers.discover-models', DiscoverProviderModelsController::class)
         ->post('/zai-bot/admin/providers', 'zai-bot.admin.providers.store', SaveProviderController::class)
         ->put('/zai-bot/admin/providers/{id:\d+}', 'zai-bot.admin.providers.update', SaveProviderController::class)
         ->delete('/zai-bot/admin/providers/{id:\d+}', 'zai-bot.admin.providers.delete', DeleteProviderController::class)

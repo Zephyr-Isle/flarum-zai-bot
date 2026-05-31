@@ -5,8 +5,6 @@ use Illuminate\Database\Schema\Builder;
 
 return [
     'up' => function (Builder $schema) {
-        $db = $schema->getConnection();
-        $driver = $db->getDriverName();
         $tables = [
             'ai_session_state',
             'ai_action_logs',
@@ -22,22 +20,18 @@ return [
             }
         }
 
-        $schema->create('ai_providers', function (Blueprint $table) use ($driver) {
+        $schema->create('ai_providers', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
             $table->string('driver')->default('openai-compatible');
             $table->string('base_url');
             $table->text('api_key_encrypted');
-            if ($driver === 'pgsql') {
-                $table->jsonb('models')->nullable();
-            } else {
-                $table->json('models')->nullable();
-            }
+            $table->json('models')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
 
-        $schema->create('ai_agents', function (Blueprint $table) use ($driver) {
+        $schema->create('ai_agents', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('flarum_user_id')->unsigned()->unique();
             $table->integer('provider_id')->unsigned()->nullable();
@@ -51,11 +45,7 @@ return [
             $table->decimal('temperature', 4, 2)->default(0.7);
             $table->boolean('is_active')->default(true);
             $table->string('reply_mode', 20)->default('mention');
-            if ($driver === 'pgsql') {
-                $table->jsonb('active_tags')->nullable();
-            } else {
-                $table->json('active_tags')->nullable();
-            }
+            $table->json('active_tags')->nullable();
             $table->string('cooperation_role', 20)->default('none');
             $table->unsignedInteger('hourly_post_limit')->nullable();
             $table->unsignedInteger('daily_post_limit')->nullable();
@@ -66,29 +56,21 @@ return [
             $table->timestamps();
         });
 
-        $schema->create('user_ai_memories', function (Blueprint $table) use ($driver) {
+        $schema->create('user_ai_memories', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id')->unsigned();
             $table->integer('ai_agent_id')->unsigned()->nullable();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('ai_agent_id')->references('id')->on('ai_agents')->onDelete('cascade');
             $table->float('affection_score')->default(0.5);
-            if ($driver === 'pgsql') {
-                $table->jsonb('personality_tags')->nullable();
-            } else {
-                $table->json('personality_tags')->nullable();
-            }
+            $table->json('personality_tags')->nullable();
             $table->unsignedInteger('interaction_count')->default(0);
-            if ($driver === 'pgsql') {
-                $table->timestampTz('last_interaction')->nullable();
-            } else {
-                $table->timestamp('last_interaction')->nullable();
-            }
+            $table->timestamp('last_interaction')->nullable();
             $table->timestamps();
             $table->unique(['user_id', 'ai_agent_id']);
         });
 
-        $schema->create('conversation_memories', function (Blueprint $table) use ($driver) {
+        $schema->create('conversation_memories', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id')->unsigned()->nullable();
             $table->integer('discussion_id')->unsigned()->nullable();
@@ -98,25 +80,12 @@ return [
             $table->foreign('ai_agent_id')->references('id')->on('ai_agents')->onDelete('set null');
             $table->text('summary');
             $table->float('strength')->default(1.0);
-            if ($driver === 'pgsql') {
-                $table->timestampTz('last_accessed_at')->nullable();
-            } else {
-                $table->timestamp('last_accessed_at')->nullable();
-            }
+            $table->timestamp('last_accessed_at')->nullable();
             $table->timestamps();
+            $table->json('embedding')->nullable();
         });
 
-        if ($driver === 'pgsql') {
-            $db->statement('CREATE EXTENSION IF NOT EXISTS vector');
-            $db->statement('ALTER TABLE conversation_memories ADD COLUMN embedding vector(1536)');
-            $db->statement('CREATE INDEX conversation_memories_embedding_hnsw_idx ON conversation_memories USING hnsw (embedding vector_cosine_ops)');
-        } else {
-            $schema->table('conversation_memories', function (Blueprint $table) {
-                $table->json('embedding')->nullable();
-            });
-        }
-
-        $schema->create('ai_action_logs', function (Blueprint $table) use ($driver) {
+        $schema->create('ai_action_logs', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('ai_agent_id')->unsigned()->nullable();
             $table->integer('user_id')->unsigned()->nullable();
@@ -127,44 +96,19 @@ return [
             $table->unsignedBigInteger('target_id')->nullable();
             $table->string('result', 20);
             $table->text('error_message')->nullable();
-            if ($driver === 'pgsql') {
-                $table->timestampTz('created_at')->useCurrent();
-            } else {
-                $table->timestamp('created_at')->useCurrent();
-            }
+            $table->timestamp('created_at')->useCurrent();
         });
 
-        if ($driver === 'pgsql') {
-            $db->statement(<<<'SQL'
-CREATE UNLOGGED TABLE ai_session_state (
-    session_key varchar(191) PRIMARY KEY,
-    context jsonb NOT NULL DEFAULT '[]'::jsonb,
-    emotions jsonb NOT NULL DEFAULT '{}'::jsonb,
-    expires_at timestamptz NOT NULL
-)
-SQL);
-        } else {
-            $schema->create('ai_session_state', function (Blueprint $table) {
-                $table->string('session_key', 191)->primary();
-                $table->json('context');
-                $table->json('emotions');
-                $table->timestamp('expires_at');
-            });
-        }
+        $schema->create('ai_session_state', function (Blueprint $table) {
+            $table->string('session_key', 191)->primary();
+            $table->json('context');
+            $table->json('emotions');
+            $table->timestamp('expires_at');
+        });
     },
     'down' => function (Builder $schema) {
-        $db = $schema->getConnection();
-        $driver = $db->getDriverName();
-
-        if ($driver === 'pgsql') {
-            $db->statement('DROP TABLE IF EXISTS ai_session_state');
-        } else {
-            $schema->dropIfExists('ai_session_state');
-        }
+        $schema->dropIfExists('ai_session_state');
         $schema->dropIfExists('ai_action_logs');
-        if ($driver === 'pgsql') {
-            $db->statement('DROP INDEX IF EXISTS conversation_memories_embedding_hnsw_idx');
-        }
         $schema->dropIfExists('conversation_memories');
         $schema->dropIfExists('user_ai_memories');
         $schema->dropIfExists('ai_agents');

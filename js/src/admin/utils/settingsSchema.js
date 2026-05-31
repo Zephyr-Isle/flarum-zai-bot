@@ -14,20 +14,6 @@ export default function settingsSchema(translator) {
       ],
     },
     {
-      key: 'database',
-      fields: [
-        { key: 'use_separate_database', type: 'boolean' },
-        { key: 'separate_db_connection', type: 'text' },
-        { key: 'separate_db_host', type: 'text' },
-        { key: 'separate_db_port', type: 'number', min: 1, step: 1 },
-        { key: 'separate_db_database', type: 'text' },
-        { key: 'separate_db_username', type: 'text' },
-        { key: 'separate_db_password', type: 'password' },
-        { key: 'separate_db_prefix', type: 'text' },
-        { key: 'separate_db_sslmode', type: 'text' },
-      ],
-    },
-    {
       key: 'agents',
       fields: [
         { type: 'markup', content: translator('agents.scaffold_note') },

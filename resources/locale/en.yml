@@ -3,6 +3,110 @@ zai-bot:
     page:
       title: Zai Bot
       description: Multi-role AI assistant settings, data storage, memory, tools, and safety controls.
+    ui:
+      common:
+        new: New
+        edit: Edit
+        delete: Delete
+        active: Active
+        default: Default
+        enabled: Enabled
+        disabled: Disabled
+        saving: Saving...
+        testing: Testing...
+      errors:
+        load_admin_data: Failed to load admin data.
+        save_provider: Failed to save provider.
+        delete_provider: Failed to delete provider.
+        test_provider: Provider connection test failed.
+        discover_models: Failed to discover provider models.
+        save_agent: Failed to save AI agent.
+        delete_agent: Failed to delete AI agent.
+        maintenance: Maintenance request failed.
+        test_chat: Test chat failed.
+      metrics:
+        providers: Providers
+        agents: Agents
+        active_agents: Active Agents
+        memories: Memories
+        actions: Actions
+        failed_actions: Failed Actions
+        enabled_integrations: Enabled Integrations
+        tool_ready_integrations: Tool-ready Integrations
+      integrations:
+        title: Extension Integrations
+        enabled_capabilities: "Enabled capabilities:"
+      provider:
+        section_title: Provider Management
+        name: Name
+        driver: Driver
+        base_url: Base URL
+        api_key: API Key
+        keep_api_key_hint: Leave blank to keep the currently saved API key.
+        models: Model Configuration
+        models_help: Supports a JSON array, or an object with `chat`, `embedding`, and `available` fields.
+        models_invalid: Invalid model list format. Enter JSON or one model ID per line.
+        test_connection: Test Connection
+        fetching_models: Fetching Models...
+        fetch_models: Fetch Models
+        update: Update Provider
+        create: Create Provider
+        models_count: "{count} models"
+        api_key_configured: API key configured
+        api_key_missing: No API key saved
+        delete_confirm: 'Delete provider "{name}"?'
+        test_success_title: Connection Test Succeeded
+        test_success_detail: "Provider is reachable and returned {count} models."
+        test_failed_title: Connection Test Failed
+        models_updated_title: Model List Updated
+        models_updated_detail: "Fetched {count} models and filled them into the current form."
+        models_failed_title: Model Discovery Failed
+        drivers:
+          openai_compatible: OpenAI Compatible
+          moonshot: Moonshot AI
+          glm: GLM
+          minimax: MiniMax
+          qwen: Qwen
+          deepseek: DeepSeek
+          anthropic: Anthropic Claude
+          google: Google Gemini
+          openrouter: OpenRouter
+      agent:
+        section_title: AI Agent Management
+        default_personality: Helpful AI forum member.
+        name: Name
+        provider: Provider
+        username: Username
+        email: Email
+        personality: Personality
+        expertise: Expertise
+        reply_mode: Reply Mode
+        reply_mode_mention: Mention Only
+        reply_mode_all: Always Participate
+        chat_model: Chat Model
+        embedding_model: Embedding Model
+        temperature: Temperature
+        language: Language
+        system_prompt: System Prompt
+        active_tags: Active Tags JSON
+        update: Update Agent
+        create: Create Agent
+        unnamed: Unnamed Agent
+        no_user: No User
+        default_provider: Default Provider
+        delete_confirm: 'Delete AI agent "{name}"?'
+      test_chat:
+        section_title: Test Chat
+        agent: Agent
+        select_agent: Select an agent
+        message: Message
+        run: Run Test Chat
+      maintenance:
+        section_title: Maintenance
+        export: Export State
+        decay_memories: Decay Memories
+        cleanup_sessions: Cleanup Sessions
+        refresh_personality_tags: Refresh Personality Tags
     database:
       test_button: Test connection
       testing: Testing connection...

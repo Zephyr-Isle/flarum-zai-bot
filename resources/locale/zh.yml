@@ -3,6 +3,110 @@ zai-bot:
     page:
       title: Zai Bot
       description: 配置多角色 AI 助手的提供商、数据存储、记忆、工具联动与安全策略。
+    ui:
+      common:
+        new: 新建
+        edit: 编辑
+        delete: 删除
+        active: 启用
+        default: 默认
+        enabled: 已启用
+        disabled: 已禁用
+        saving: 保存中...
+        testing: 测试中...
+      errors:
+        load_admin_data: 加载后台数据失败。
+        save_provider: 保存服务商失败。
+        delete_provider: 删除服务商失败。
+        test_provider: 测试服务商连接失败。
+        discover_models: 获取模型列表失败。
+        save_agent: 保存 AI 角色失败。
+        delete_agent: 删除 AI 角色失败。
+        maintenance: 执行维护操作失败。
+        test_chat: 测试对话失败。
+      metrics:
+        providers: 服务商数量
+        agents: 角色数量
+        active_agents: 已启用角色
+        memories: 记忆数量
+        actions: 动作日志
+        failed_actions: 失败动作
+        enabled_integrations: 已启用集成
+        tool_ready_integrations: 工具就绪集成
+      integrations:
+        title: 扩展集成
+        enabled_capabilities: 已启用能力：
+      provider:
+        section_title: 服务商管理
+        name: 名称
+        driver: 驱动
+        base_url: 基础地址
+        api_key: API Key
+        keep_api_key_hint: 留空则保留当前已保存的 API Key。
+        models: 模型配置
+        models_help: 支持 JSON 数组，或使用包含 `chat`、`embedding`、`available` 字段的对象。
+        models_invalid: 模型列表格式无效，请填写 JSON 或每行一个模型 ID。
+        test_connection: 测试连接
+        fetching_models: 获取模型中...
+        fetch_models: 获取模型
+        update: 更新服务商
+        create: 创建服务商
+        models_count: "{count} 个模型"
+        api_key_configured: 已配置 API Key
+        api_key_missing: 未保存 API Key
+        delete_confirm: "确定删除服务商 “{name}” 吗？"
+        test_success_title: 连接测试成功
+        test_success_detail: "服务商可访问，共返回 {count} 个模型。"
+        test_failed_title: 连接测试失败
+        models_updated_title: 模型列表已更新
+        models_updated_detail: "已获取 {count} 个模型并回填到当前表单。"
+        models_failed_title: 模型获取失败
+        drivers:
+          openai_compatible: OpenAI 兼容
+          moonshot: Moonshot AI
+          glm: GLM
+          minimax: MiniMax
+          qwen: 通义千问
+          deepseek: DeepSeek
+          anthropic: Anthropic Claude
+          google: Google Gemini
+          openrouter: OpenRouter
+      agent:
+        section_title: AI 角色管理
+        default_personality: 乐于助人的 AI 论坛成员。
+        name: 名称
+        provider: 服务商
+        username: 用户名
+        email: 邮箱
+        personality: 人设
+        expertise: 擅长领域
+        reply_mode: 回复模式
+        reply_mode_mention: 提及时回复
+        reply_mode_all: 始终参与
+        chat_model: 对话模型
+        embedding_model: 向量模型
+        temperature: 温度
+        language: 语言
+        system_prompt: 系统提示词
+        active_tags: 生效标签 JSON
+        update: 更新角色
+        create: 创建角色
+        unnamed: 未命名角色
+        no_user: 未绑定用户
+        default_provider: 默认服务商
+        delete_confirm: "确定删除 AI 角色 “{name}” 吗？"
+      test_chat:
+        section_title: 测试对话
+        agent: AI 角色
+        select_agent: 选择一个角色
+        message: 消息
+        run: 运行测试对话
+      maintenance:
+        section_title: 维护操作
+        export: 导出状态
+        decay_memories: 衰减记忆
+        cleanup_sessions: 清理会话
+        refresh_personality_tags: 刷新人设标签
     database:
       test_button: 测试连接
       testing: 正在测试连接...

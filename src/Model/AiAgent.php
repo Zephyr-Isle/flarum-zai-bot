@@ -6,23 +6,10 @@ use Flarum\Database\AbstractModel;
 use Flarum\User\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Zephyrisle\ZaiBot\Support\DatabaseConfig;
 
 class AiAgent extends AbstractModel
 {
     protected $table = 'ai_agents';
-
-    public function __construct(array $attributes = [])
-    {
-        parent::__construct($attributes);
-        
-        /** @var DatabaseConfig $databaseConfig */
-        $databaseConfig = resolve(DatabaseConfig::class);
-        
-        if ($databaseConfig->useSeparateDatabase()) {
-            $this->setConnection($databaseConfig->getConnectionName());
-        }
-    }
 
     protected $fillable = [
         'flarum_user_id',

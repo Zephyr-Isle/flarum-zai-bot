@@ -13,14 +13,12 @@ use Zephyrisle\ZaiBot\Service\ProviderManager;
 use Zephyrisle\ZaiBot\Service\SettingAccessor;
 use Zephyrisle\ZaiBot\Service\StatsService;
 use Zephyrisle\ZaiBot\Service\ToolExecutionService;
-use Zephyrisle\ZaiBot\Support\DatabaseConfig;
 use Zephyrisle\ZaiBot\Tool\ToolRegistry;
 
 class ZaiBotServiceProvider extends AbstractServiceProvider
 {
     public function register(): void
     {
-        $this->container->singleton(DatabaseConfig::class);
         $this->container->singleton(ToolRegistry::class);
         $this->container->singleton(Client::class, fn () => new Client());
         $this->container->singleton(SettingAccessor::class);
